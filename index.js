@@ -105,8 +105,101 @@ console.log('------------')
 
    foo.count = 0
 
-   for(var i = 0; i < 10; i++) {
+   for(var i = 0; i < 5; i++) {
      foo(i)
    }
 
    console.log(foo.count)
+
+   /**
+    *
+    * Instead of stopping at this point and digging into why the this
+    * reference doesn’t seem to be behaving as expected, and answering those
+    * tough but important questions, many developers simply avoid the issue altogether,
+    * and hack toward some other solution, such as creating another object to hold the count property:
+    *
+    */
+
+    function bar(num){
+      console.log('Bar: ' + num)
+
+      ++data.count
+    }
+
+    let data = {
+      count: 0
+    }
+
+    for(var i = 0; i < 5; i++) {
+      bar(i)
+    }
+
+    console.log(data.count)
+
+
+    /**
+     *
+     * While it is true that this approach “solves” the problem, unfortunately
+     * it simply ignores the real problem—lack of understanding what this
+     * means and how it works—and instead falls back to the comfort zone
+     * of a more familiar mechanism: lexical scope.
+     * Consider these two functions:
+     */
+
+     function fooBar(num){
+       fooBar.count = num
+     }
+
+     setTimeout(function(){
+
+     }, 10)
+
+     /**
+      * So another solution to our running example would have been to use
+      * the foo identifier as a function object reference in each place, and not
+      * use this at all, which works.
+      */
+
+      function barFoo(num){
+        console.log("barFoo: " + num)
+        barFoo.count++;
+      }
+
+      barFoo.count = 0
+
+      for(var i = 0; i < 5; i++) {
+        // barFoo(i)
+        barFoo.call(barFoo, i)
+      }
+
+      console.log(barFoo.count)
+
+
+      /**
+       * Its Scope
+       *
+       * The next most common misconception about the meaning of this is
+       * that it somehow refers to the function’s scope.
+       * It’s a tricky question because in one sense there is some truth,
+       * but in the other sense, it’s quite misguided
+       * To be clear, this does not, in any way, refer to a function’s lexical scope.
+       * It is true that internally, scope is kind of like an object with properties for
+       * each of the available identifiers. But the scope “object” is not accessible
+       * to JavaScript code. It’s an inner part of the engine’s implementation.
+       */
+
+       /**
+        * Consider code that attempts (and fails!) to cross over the boundary and
+        * use this to implicitly refer to a function’s lexical scope:
+        */
+
+        function fooScope(){
+          var a = 2;
+          this.barScope()
+        }
+
+        function barScope(){
+          console.log(this.a)
+        }
+
+        //fooScope() // TypeError: this.barScope is not a function
