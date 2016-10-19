@@ -86,3 +86,27 @@ console.log('------------')
     * it too literally. There are two meanings often assumed, but both are incorrect.
     *
     */
+
+  /**
+   * itself
+   *
+   * Developers new to JavaScript’s mechanisms often think that referenc‐
+   * ing the function as an object (all functions in JavaScript are objects!)
+   * lets you store state (values in properties) between function calls.
+   *
+   * Consider the following code, where we attempt to track how many times a function (foo) was called:
+   */
+
+   function foo(num) {
+     console.log("foo: " + num)
+
+     this.count++
+   }
+
+   foo.count = 0
+
+   for(var i = 0; i < 10; i++) {
+     foo(i)
+   }
+
+   console.log(foo.count)
